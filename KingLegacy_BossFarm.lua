@@ -1,85 +1,98 @@
-local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source"))()
+-- TEK Hub - King Legacy Auto Boss Farm GUI
+-- Desenvolvido com carinho por ChatGPT ♥
 
-local Window = Rayfield:CreateWindow({
-   Name = "TEK - Boss Farm",
-   LoadingTitle = "Carregando TEK...",
-   LoadingSubtitle = "Por Branquelo & Tek",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "TEKConfig",
-      FileName = "KingLegacyUI"
-   },
-   Discord = {
-      Enabled = false
-   },
-   KeySystem = false
-})
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3"))()
+local window = library:CreateWindow("TEK - King Legacy", Vector2.new(500, 400), Enum.KeyCode.RightControl)
 
--- Main Tab
-local MainTab = Window:CreateTab("⚔️ Boss Farm", 4483362458)
+local FarmTab = window:CreateTab("Auto Farm Boss")
+local SettingsTab = window:CreateTab("Farm Settings")
 
-local AutoFarm = MainTab:CreateToggle({
-   Name = "Auto Farm Boss",
-   CurrentValue = false,
-   Flag = "AutoFarmBoss",
-   Callback = function(Value)
-      getgenv().AutoFarmBoss = Value
-   end
-})
+-- Variáveis de configuração
+_G.SelectedWeapon = "Sword"
+_G.FarmDistance = 5
+_G.FarmPosition = "Above"
 
-local BossDropdown = MainTab:CreateDropdown({
-   Name = "Selecionar Boss",
-   Options = {"Hydra", "King Samurai", "Dark Beard", "Snow Demon"},
-   CurrentOption = "Hydra",
-   Flag = "SelecionarBoss",
-   Callback = function(Value)
-      getgenv().BossSelecionado = Value
-   end
-})
+-- Função para detectar Bosses
+function getBoss()
+    for _, v in pairs(game:GetService("Workspace").Enemy:GetChildren()) do
+        if v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+            local bossNames = {"Hydra", "Kong", "Captain Elephant", "Snow Lurker", "Sea King", "Dark Beard", "Kaido", "Flame User"}
+            for _, name in ipairs(bossNames) do
+                if string.find(v.Name, name) then
+                    return v
+                end
+            end
+        end
+    end
+    return nil
+end
 
-local WeaponDropdown = MainTab:CreateDropdown({
-   Name = "Selecionar Arma",
-   Options = {"Sword", "Combat"},
-   CurrentOption = "Sword",
-   Flag = "SelecionarArma",
-   Callback = function(Value)
-      getgenv().TipoArma = Value
-   end
-})
+-- Função de ataque
+function attackBoss(boss)
+    local root = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not root then return end
 
--- Configurações de Farm
-local FarmTab = Window:CreateTab("⚙️ Farm Settings", 4483362458)
+    local offset = Vector3.new(0, 0, 0)
+    if _G.FarmPosition == "Above" then
+        offset = Vector3.new(0, _G.FarmDistance, 0)
+    elseif _G.FarmPosition == "Below" then
+        offset = Vector3.new(0, -_G.FarmDistance, 0)
+    elseif _G.FarmPosition == "Side" then
+        offset = Vector3.new(_G.FarmDistance, 0, 0)
+    end
 
-FarmTab:CreateSlider({
-   Name = "Distance (1-20)",
-   Range = {1, 20},
-   Increment = 1,
-   Suffix = "distância",
-   CurrentValue = 5,
-   Flag = "DistanceFarm",
-   Callback = function(Value)
-      getgenv().FarmDistance = Value
-   end
-})
+    root.CFrame = boss.HumanoidRootPart.CFrame + offset
 
-FarmTab:CreateSlider({
-   Name = "Set Distance (Bug Fix)",
-   Range = {1, 20},
-   Increment = 1,
-   Suffix = "offset",
-   CurrentValue = 3,
-   Flag = "SetBugDistance",
-   Callback = function(Value)
-      getgenv().BugFixDistance = Value
-   end
-})
+    local tool = nil
+    for _, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+        if v:IsA("Tool") and string.find(v.Name, _G.SelectedWeapon) then
+            tool = v
+            break
+        end
+    end
+    if tool then
+        tool.Parent = game.Players.LocalPlayer.Character
+        tool:Activate()
+    end
+end
 
-FarmTab:CreateDropdown({
-   Name = "Posição de ataque",
-   Options = {"Above", "Below", "Side"},
-   CurrentOption = "Above",
-   Flag = "FarmPosition",
-   Callback = function(Value)
-      getgenv().FarmPosition = Value
-   end
-})
+-- Loop de farm
+_G.AutoFarmBoss = false
+function autoFarmLoop()
+    while _G.AutoFarmBoss do
+        local boss = getBoss()
+        if boss then
+            attackBoss(boss)
+        end
+        wait(0.3)
+    end
+end
+
+-- Botão principal
+FarmTab:CreateToggle("Auto Farm Bosses", nil, function(state)
+    _G.AutoFarmBoss = state
+    if state then
+        autoFarmLoop()
+    end
+end)
+
+-- Dropdown para arma
+SettingsTab:CreateDropdown("Select Weapon", {"Sword", "Combat"}, function(value)
+    _G.SelectedWeapon = value
+end)
+
+-- Slider para distância
+SettingsTab:CreateSlider("Set Distance", 1, 20, function(value)
+    _G.FarmDistance = value
+end)
+
+-- Dropdown para posição
+SettingsTab:CreateDropdown("Select Position", {"Above", "Below", "Side"}, function(value)
+    _G.FarmPosition = value
+end)
+
+-- Créditos
+local InfoTab = window:CreateTab("About")
+InfoTab:CreateLabel("TEK - Boss AutoFarm")
+InfoTab:CreateLabel("Inspired by ArcHub")
+InfoTab:CreateLabel("Created by Branquelo Legal & ChatGPT")
