@@ -1,51 +1,47 @@
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+-- T-M Hub - Tocando Caos Auto Click
+-- Interface: Rayfield UI (estilo ArcHub)
+-- T = Tech, M = Mayhem
+
+-- Carregar Rayfield UI
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "T-M Hub",
-   LoadingTitle = "Carregando T-M Hub",
-   ConfigurationSaving = {
-      Enabled = false
-   }
+    Name = "T-M Hub",
+    LoadingTitle = "T-M Hub Script",
+    LoadingSubtitle = "by Branquelo Legal & ChatGPT",
+    ConfigurationSaving = {Enabled = false},
+    Discord = {Enabled = false},
+    KeySystem = false,
 })
 
--- Auto Clicker
+local Tab = Window:CreateTab("Auto Click", 4483362458)
+local vim = game:GetService("VirtualInputManager")
+
+-- Auto Click
 getgenv().AutoClick = false
 
-Rayfield:CreateToggle({
-    Name = "Auto Click",
+Tab:CreateToggle({
+    Name = "Ativar Auto Click",
     CurrentValue = false,
-    Callback = function(Value)
-        getgenv().AutoClick = Value
-        while getgenv().AutoClick do
-            game:GetService("ReplicatedStorage").Events.Click:FireServer()
-            task.wait()
-        end
+    Callback = function(v)
+        getgenv().AutoClick = v
+        task.spawn(function()
+            while getgenv().AutoClick do
+                vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                wait()
+                vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                wait()
+            end
+        end)
     end
 })
 
--- Lista de ovos
-local SelectedEgg = "Basic"
-
-Rayfield:CreateDropdown({
-    Name = "Selecionar Ovo",
-    Options = {"Basic", "Mossy", "Sakura", "Chocolate", "Gummy"},
-    CurrentOption = "Basic",
-    Callback = function(Value)
-        SelectedEgg = Value
-    end
-})
-
--- Auto Hatch
-getgenv().AutoHatch = false
-
-Rayfield:CreateToggle({
-    Name = "Auto Hatch (Triple)",
-    CurrentValue = false,
-    Callback = function(Value)
-        getgenv().AutoHatch = Value
-        while getgenv().AutoHatch do
-            game:GetService("ReplicatedStorage").Functions.Hatch:InvokeServer(SelectedEgg, "Triple")
-            wait(1.5)
-        end
-    end
+-- Notificação de sucesso
+Rayfield:Notify({
+    Title = "T-M Hub",
+    Content = "Auto Click carregado com sucesso!",
+    Duration = 5,
+    Actions = {
+        Ignore = {Name = "OK", Callback = function() end}
+    }
 })
