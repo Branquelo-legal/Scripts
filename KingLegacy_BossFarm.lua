@@ -1,98 +1,62 @@
--- TEK Hub - King Legacy Auto Boss Farm GUI
--- Desenvolvido com carinho por ChatGPT ♥
+-- T-K Hub - King Legacy Auto Farm Bosses
+-- Interface: Rayfield UI (estilo ArcHub)
+-- T = Tech, K = King Legacy
 
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3"))()
-local window = library:CreateWindow("TEK - King Legacy", Vector2.new(500, 400), Enum.KeyCode.RightControl)
+-- Carregar Rayfield UI
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
-local FarmTab = window:CreateTab("Auto Farm Boss")
-local SettingsTab = window:CreateTab("Farm Settings")
+local Window = Rayfield:CreateWindow({
+    Name = "T-K Hub", LoadingTitle = "T-K Hub Script", 
+    LoadingSubtitle = "by Branquelo Legal & ChatGPT", 
+    ConfigurationSaving = {Enabled=false}, Discord={Enabled=false}, KeySystem=false
+})
 
--- Variáveis de configuração
-_G.SelectedWeapon = "Sword"
-_G.FarmDistance = 5
-_G.FarmPosition = "Above"
+local Tab = Window:CreateTab("Auto Farm Bosses", 4483362458)
 
--- Função para detectar Bosses
-function getBoss()
-    for _, v in pairs(game:GetService("Workspace").Enemy:GetChildren()) do
-        if v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
-            local bossNames = {"Hydra", "Kong", "Captain Elephant", "Snow Lurker", "Sea King", "Dark Beard", "Kaido", "Flame User"}
-            for _, name in ipairs(bossNames) do
-                if string.find(v.Name, name) then
-                    return v
+-- Bosses organizados por tipo
+local bosses = {
+    Normal = {"Smoker", "Tashi", "Captain Clown", "Captain", "The Barbaric", "Karate Fishman", "Shark Man",
+              "Dark Leg", "Dory", "King of Snow", "Chopper", "Candle Man", "Bomb Man", "King of Sand",
+              "Ball Man", "Rumble Man", "Leader", "Pasta", "Wolf", "Giraffe", "Leo"},
+    Raid = {"Oars", "Expert Swordsman", "Santa", "Dragon", "Oden", "King Samurai", "Mrs. Mother", "Jack o Lantern"},
+    Golden = {"Boss Man", "Bella", "Green Hair Man", "King Man", "Giant Fighter", "Drill Headman", "Inferno Man", "Captain String"}
+}
+
+-- Detectar SEA
+local placeId = game.PlaceId
+local currentSea = (placeId == 4520749081 and "Normal")
+                or (placeId == 6381829480 and "Raid")
+                or ((placeId == 5931540094 or placeId == 15759515082) and "Raid") or "Normal"
+
+-- Variáveis de controle
+local autoEnabled = false
+local selectedBoss = bosses[currentSea][1]
+local attackKey = "Z"
+
+-- Interface
+Tab:CreateToggle({ Name="Ativar Auto Farm", CurrentValue=false, Callback=function(v) autoEnabled = v end })
+Tab:CreateDropdown({ Name="Selecionar Boss", Options=bosses[currentSea], CurrentOption=selectedBoss,
+    Callback=function(v) selectedBoss = v end })
+Tab:CreateDropdown({ Name="Tipo Ataque", Options={"Z", "X"}, CurrentOption="Z", Callback=function(v) attackKey = v end })
+
+Rayfield:Notify({ Title="T‑K Hub", Content="Interface iniciada com sucesso!", Duration=5, Actions={Ignore={Name="OK",Callback=function() end}}})
+
+-- Lógica de Farm
+task.spawn(function()
+    while task.wait(0.3) do
+        if autoEnabled then
+            for _,v in pairs(workspace:GetDescendants()) do
+                if v.Name == selectedBoss and v:FindFirstChild("HumanoidRootPart") then
+                    local plr = game.Players.LocalPlayer
+                    local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        hrp.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,10,0)
+                        game:GetService("VirtualInputManager"):SendKeyEvent(true, attackKey, false, game)
+                        wait(0.2)
+                        game:GetService("VirtualInputManager"):SendKeyEvent(false, attackKey, false, game)
+                    end
                 end
             end
         end
     end
-    return nil
-end
-
--- Função de ataque
-function attackBoss(boss)
-    local root = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if not root then return end
-
-    local offset = Vector3.new(0, 0, 0)
-    if _G.FarmPosition == "Above" then
-        offset = Vector3.new(0, _G.FarmDistance, 0)
-    elseif _G.FarmPosition == "Below" then
-        offset = Vector3.new(0, -_G.FarmDistance, 0)
-    elseif _G.FarmPosition == "Side" then
-        offset = Vector3.new(_G.FarmDistance, 0, 0)
-    end
-
-    root.CFrame = boss.HumanoidRootPart.CFrame + offset
-
-    local tool = nil
-    for _, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-        if v:IsA("Tool") and string.find(v.Name, _G.SelectedWeapon) then
-            tool = v
-            break
-        end
-    end
-    if tool then
-        tool.Parent = game.Players.LocalPlayer.Character
-        tool:Activate()
-    end
-end
-
--- Loop de farm
-_G.AutoFarmBoss = false
-function autoFarmLoop()
-    while _G.AutoFarmBoss do
-        local boss = getBoss()
-        if boss then
-            attackBoss(boss)
-        end
-        wait(0.3)
-    end
-end
-
--- Botão principal
-FarmTab:CreateToggle("Auto Farm Bosses", nil, function(state)
-    _G.AutoFarmBoss = state
-    if state then
-        autoFarmLoop()
-    end
 end)
-
--- Dropdown para arma
-SettingsTab:CreateDropdown("Select Weapon", {"Sword", "Combat"}, function(value)
-    _G.SelectedWeapon = value
-end)
-
--- Slider para distância
-SettingsTab:CreateSlider("Set Distance", 1, 20, function(value)
-    _G.FarmDistance = value
-end)
-
--- Dropdown para posição
-SettingsTab:CreateDropdown("Select Position", {"Above", "Below", "Side"}, function(value)
-    _G.FarmPosition = value
-end)
-
--- Créditos
-local InfoTab = window:CreateTab("About")
-InfoTab:CreateLabel("TEK - Boss AutoFarm")
-InfoTab:CreateLabel("Inspired by ArcHub")
-InfoTab:CreateLabel("Created by Branquelo Legal & ChatGPT")
