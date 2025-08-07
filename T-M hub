@@ -1,0 +1,64 @@
+-- T-M Hub - Tapping Mayhem GUI
+-- Feito por Tech
+
+-- Carregar Rayfield
+loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "🖱️ T-M Hub | Tapping Mayhem",
+    LoadingTitle = "Carregando T-M Hub...",
+    LoadingSubtitle = "Feito por Tech",
+    ConfigurationSaving = {
+        Enabled = false,
+    },
+    Discord = {
+        Enabled = false,
+    },
+    KeySystem = false,
+})
+
+-- Auto Click
+getgenv().AutoClick = false
+
+Rayfield:CreateToggle({
+    Name = "Auto Click",
+    CurrentValue = false,
+    Flag = "AutoClickFlag",
+    Callback = function(Value)
+        getgenv().AutoClick = Value
+        if Value then
+            task.spawn(function()
+                while getgenv().AutoClick do
+                    pcall(function()
+                        game:GetService("ReplicatedStorage").Events.Click:FireServer()
+                    end)
+                    task.wait()
+                end
+            end)
+        end
+    end,
+    SectionParent = nil,
+})
+
+-- Auto Hatch
+getgenv().AutoHatch = false
+
+Rayfield:CreateToggle({
+    Name = "Auto Hatch (Ovo: Basic)",
+    CurrentValue = false,
+    Flag = "AutoHatchFlag",
+    Callback = function(Value)
+        getgenv().AutoHatch = Value
+        if Value then
+            task.spawn(function()
+                while getgenv().AutoHatch do
+                    pcall(function()
+                        game:GetService("ReplicatedStorage").Functions.Hatch:InvokeServer("Basic", "Single")
+                    end)
+                    task.wait(1.5)
+                end
+            end)
+        end
+    end,
+    SectionParent = nil,
+})
