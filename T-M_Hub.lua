@@ -335,7 +335,7 @@ local function faz(Enemies)
         DelayTime = 0,
         Combo = 1,
         Results = Enemies,
-        Damage = math.random(50, 150),
+        Damage = math.random(150, 1150),
         CriticalHit = math.random(1, 10) <= 3
     })
 end
@@ -539,8 +539,8 @@ local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/d
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
 local Window = Fluent:CreateWindow({
-    Title = "Idk Hub - Vox Seas",
-    SubTitle = "by shaka",
+    Title = "TPK Hub - Vox Seas",
+    SubTitle = "by Xeide",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Acrylic = false,
