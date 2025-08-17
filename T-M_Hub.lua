@@ -335,8 +335,8 @@ local function faz(Enemies)
         DelayTime = 0,
         Combo = 1,
         Results = Enemies,
-        Damage = math.random(150, 1150),
-        CriticalHit = math.random(1, 10) <= 3
+        Damage = math.random(1150, 3000),
+        CriticalHit = math.random(10, 100) <= 3
     })
 end
 
@@ -572,14 +572,14 @@ Tabs.Disc:AddButton({
     Title = "DISCORD SERVER",
     Description = "Be notified of updates, click to copy",
     Callback = function()
-        setclipboard("https://discord.gg/t4aCqjX84m")
+        setclipboard("https://pt.Branquelo.com/view_video.php?viewkey=ph629bc8dd6cf27")
     end
 })
 Tabs.Disc:AddButton({
-    Title = "YOUTUBE SHAKA - ROBLOX SCRIPTS",
+    Title = "YOUTUBE XEIDE - ROBLOX SCRIPTS",
     Description = "Click to copy link",
     Callback = function()
-        setclipboard("https://www.youtube.com/@shakascripts")
+        setclipboard("DONO DO SCRIPT BRANQUELO LEGAL XEIDE ODIO")
     end
 })
 Tabs.Main:AddSection("Auto Farm")
