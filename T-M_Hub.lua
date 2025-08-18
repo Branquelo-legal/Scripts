@@ -231,7 +231,7 @@ local lastTeleport = 0
 
 local function tepe(TargetCFrame)
     while not Player.Character or not c(Player.Character) do
-        task.wait(1)
+        task.wait(0.1)
         if not _ENV.OnFarm then
             return false
         end
@@ -250,7 +250,7 @@ local function tepe(TargetCFrame)
     end
     if Humanoid.Sit then
         Humanoid.Sit = false
-        task.wait(0.1)
+        task.wait(0.01)
         return false
     end
     lastTeleport = tick()
@@ -304,10 +304,10 @@ local function d()
         local Handle = Tool:FindFirstChild("Handle")
         if Handle then
             if Handle:FindFirstChild("Cooldown") then
-                Handle.Cooldown.Value = 0
+                Handle.Cooldown.Value = 0.01
             end
             if Handle:FindFirstChild("AttackCooldown") then
-                Handle.AttackCooldown.Value = 0
+                Handle.AttackCooldown.Value = 0.01
             end
             if Handle:FindFirstChild("Debounce") then
                 Handle.Debounce.Value = false
@@ -593,9 +593,9 @@ Tabs.Main:AddToggle("AutoFarm", {
                 while task.wait(Settings.dSpeed) and _ENV.OnFarm do
                     if not c(Player.Character) then
                         repeat
-                            task.wait(0.5)
+                            task.wait(0.01)
                         until c(Player.Character)
-                        task.wait(0.2)
+                        task.wait(0.01)
                         continue
                     end
                     local CurrentQuest = a()
@@ -623,7 +623,7 @@ Tabs.Main:AddToggle("AutoFarm", {
                                 Player.Character.HumanoidRootPart.CFrame = targetCFrame
                             end
                         end
-                        task.wait(0)
+                        task.wait(0.01)
                         local AllQuestEnemies = pgaall(CurrentQuest.Target)
                         if # AllQuestEnemies > 0 then
                             faz(AllQuestEnemies)
