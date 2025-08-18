@@ -615,20 +615,19 @@ Tabs.Main:AddToggle("AutoFarm", {
                     local Humanoid = Enemy:FindFirstChild("Humanoid")
                     if HumanoidRootPart and Humanoid and Humanoid.Health > 0 then
                         if _ENV.BringMob then
-                            brnge(CurrentQuest.Target, HumanoidRootPart.CFrame)
-                        end
-                        local targetCFrame = HumanoidRootPart.CFrame * CFrame.new(0, 7.5, 0) * CFrameAngle
-                        if not tepe(targetCFrame) then
-                            if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-                                Player.Character.HumanoidRootPart.CFrame = targetCFrame
-                            end
-                        end
-                        task.wait(0)
-                        local AllQuestEnemies = pgaall(CurrentQuest.Target)
-                        if # AllQuestEnemies > 0 then
-                            faz(AllQuestEnemies)
-                        end
-                        d()
+    brnge(CurrentQuest.Target, HumanoidRootPart.CFrame)
+end
+
+-- Força hits rápidos (20 hits por tick)
+local AllQuestEnemies = pgaall(CurrentQuest.Target)
+if #AllQuestEnemies > 0 then
+    for i = 1, 20 do  -- 20 ataques por ciclo
+        faz(AllQuestEnemies)
+    end
+end
+
+-- Ativa animação da ferramenta normalmente
+d()
                     end
                 end
             end)
